@@ -1,6 +1,6 @@
 [package]
 name = "damock"
-readme = "../README.md"
+readme = "README.md"
 
 authors.workspace = true
 description.workspace = true

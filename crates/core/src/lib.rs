@@ -1,4 +1,4 @@
-#![doc = include_str!(env!("CARGO_PKG_README"))]
+#![doc = include_str!(concat!("../", env!("CARGO_PKG_README")))]
 
 /// Trait for composable mock data.
 ///
