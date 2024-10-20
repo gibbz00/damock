@@ -3,6 +3,8 @@
 [![ci_status](https://img.shields.io/github/actions/workflow/status/gibbz00/damock/ci.yaml?style=for-the-badge)](https://github.com/gibbz00/damock/actions/workflows/ci.yaml)
 [![codecov](https://img.shields.io/codecov/c/gh/gibbz00/damock?token=5lHDbjv0AQ&style=for-the-badge)](https://codecov.io/gh/gibbz00/damock)
 [![license](https://img.shields.io/github/license/gibbz00/damock.svg?style=for-the-badge)](https://github.com/gibbz00/damock/blob/main/LICENSE.md)
+[![crates_io](https://img.shields.io/crates/v/rops.svg?style=for-the-badge)](https://crates.io/crates/rops)
+[![docs_rs](https://img.shields.io/docsrs/rops/latest.svg?style=for-the-badge)](https://docs.rs/rops)
 
 ```rust
 use damock::Mock;
