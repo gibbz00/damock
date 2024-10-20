@@ -11,7 +11,7 @@ keywords = ["derive", "mocking", "testing"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/gibbz00/damock"
-version = "0.1.2"
+version = "0.1.3"
 
 [workspace.dependencies]
 damock-macros = { path = "crates/macros", version = "0" }
