@@ -9,14 +9,14 @@
 ```rust
 use damock::Mock;
 
-#[derive(Mock)]
+#[cfg_attr(test, derive(Mock))]
 struct Foo {
     bar: Bar,
     #[mock_default]
     baz: u8
 }
 
-#[derive(Mock)]
+#[cfg_attr(test, derive(Mock))]
 enum Bar {
     #[mock]
     A,
@@ -53,8 +53,7 @@ fn computes_data() {
 The `test` compiler configuration may be overridden to something else like so:
 
 ```rust
-#[derive(damock::Mock)]
-#[mock(feature = "mocks")]
+#[cfg_attr(feature = "mocks", derive(Mock), mock(feature = "mocks")]
 struct Foo;
 ```
 
