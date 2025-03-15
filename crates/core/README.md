@@ -6,29 +6,31 @@
 [![crates_io](https://img.shields.io/crates/v/damock.svg?style=for-the-badge)](https://crates.io/crates/damock)
 [![docs_rs](https://img.shields.io/docsrs/damock/latest.svg?style=for-the-badge)](https://docs.rs/damock)
 
+## Derivable and conditionally compiled data mocking
+
 ```rust
 use damock::Mock;
 
 #[cfg_attr(test, derive(Mock))]
 struct Foo {
     bar: Bar,
-    #[mock_default]
+    // Use `Default::default` rather than `Mock::mock`
+    #[cfg_attr(test, mock_default)]
     baz: u8
 }
 
 #[cfg_attr(test, derive(Mock))]
 enum Bar {
-    #[mock]
+    // Define which enum variant shall be used for mocking
+    #[cfg_attr(test, mock)]
     A,
     B,
 }
 ```
 
-The former derive expands into:
+The derive of `Foo` expands into:
 
 ```rust
-// Derived mock implementations will
-// always be conditionally compiled.
 #[cfg(test)]
 impl Mock for Foo {
     fn mock() -> Self {
@@ -40,7 +42,19 @@ impl Mock for Foo {
 }
 ```
 
-Toy application:
+Derived mock implementations behind `cfg_attr` are always conditionally compiled
+under the same predicate.
+
+The `test` compiler configuration may be overridden to something else like so:
+
+```rust
+#[cfg_attr(feature = "mocks", derive(Mock))]
+struct Foo;
+```
+
+No conditional compilation is applied when no `cfg_attr` is used, e.g. `#[derive(Mock)]`.
+
+## Toy application
 
 ```no_compile
 #[test]
@@ -49,12 +63,3 @@ fn computes_data() {
   assert_eq!(DataOutput::mock(), actual);
 }
 ```
-
-The `test` compiler configuration may be overridden to something else like so:
-
-```rust
-#[cfg_attr(feature = "mocks", derive(Mock), mock(feature = "mocks")]
-struct Foo;
-```
-
-This may come in use when `Mock` implementations need be shared between workspace crates.

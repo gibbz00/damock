@@ -1,10 +1,9 @@
-#[derive(damock::Mock)]
-#[mock(feature = "mocks")]
+#[cfg_attr(test, derive(damock::Mock))]
 enum Foo {
-    #[mock]
+    #[cfg_attr(test, mock)]
     Bar,
 }
 
 fn main() {
-    compile_error!("")
+    <Foo as damock::Mock>::mock();
 }
