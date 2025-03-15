@@ -1,5 +1,7 @@
 #![doc = include_str!(concat!("../", env!("CARGO_PKG_README")))]
 
+pub use damock_macros::Mock;
+
 /// Trait for composable mock data.
 ///
 /// Similar to [`std::default::Default`], but for tests.
@@ -18,4 +20,10 @@ impl Mock for () {
     fn mock() -> Self {}
 }
 
-pub use damock_macros::Mock;
+/// Another [`Mock`] but for different mock data
+pub trait MockOther: Sized {
+    /// Returns `Self` containing a non-random test value
+    ///
+    /// Normally implemented after [`Mock`] where `T::mock() != T::mock_other()`
+    fn mock_other() -> Self;
+}
