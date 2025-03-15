@@ -42,18 +42,6 @@ impl Mock for Foo {
 }
 ```
 
-Derived mock implementations behind `cfg_attr` are always conditionally compiled
-under the same predicate.
-
-The `test` compiler configuration may be overridden to something else like so:
-
-```rust
-#[cfg_attr(feature = "mocks", derive(Mock))]
-struct Foo;
-```
-
-No conditional compilation is applied when no `cfg_attr` is used, e.g. `#[derive(Mock)]`.
-
 ## Toy application
 
 ```no_compile

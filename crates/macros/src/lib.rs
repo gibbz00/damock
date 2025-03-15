@@ -2,7 +2,7 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, punctuated::Punctuated, Data, DeriveInput, Fields, FieldsNamed, Meta, Token};
+use syn::{parse_macro_input, Data, DeriveInput, Fields, FieldsNamed};
 
 /// Derives `Mock` for both structs and enums if all their fields implement either `Mock` or
 /// `Default`.
@@ -16,11 +16,6 @@ fn derive_mock_impl(token_stream: TokenStream) -> TokenStream {
 
     let identifier = type_definition.ident;
 
-    let cfg_scope = match cfg_scope(type_definition.attrs) {
-        Ok(scope) => scope,
-        Err(err) => return err.into_compile_error().into(),
-    };
-
     let self_definition_result = match type_definition.data {
         Data::Struct(data_struct) => derive_struct(data_struct),
         Data::Enum(data_enum) => derive_enum(data_enum),
@@ -31,7 +26,6 @@ fn derive_mock_impl(token_stream: TokenStream) -> TokenStream {
     match self_definition_result {
         Ok(self_definition) => {
             quote! {
-                #cfg_scope
                 impl ::damock::Mock for #identifier {
                     fn mock() -> Self {
                         #self_definition
@@ -42,36 +36,6 @@ fn derive_mock_impl(token_stream: TokenStream) -> TokenStream {
         Err(err) => err.to_compile_error(),
     }
     .into()
-}
-
-fn cfg_scope(container_attributes: Vec<syn::Attribute>) -> syn::Result<Option<proc_macro2::TokenStream>> {
-    // find a predicate inside matching the first cfg_attr(predicate, derive(Mock))
-    // NOTE: method does not work if multiple Mock derives are used
-    for attribute in container_attributes {
-        if let syn::Meta::List(meta_list) = attribute.meta {
-            if meta_list.path.is_ident("cfg_attr") {
-                let mut nested_meta_iter = meta_list
-                    .parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?
-                    .into_iter();
-
-                let predicate = nested_meta_iter.next().expect("cfg_attr must begin with a precidate");
-
-                for nested_meta in nested_meta_iter {
-                    if nested_meta.path().is_ident("derive") {
-                        if let syn::Meta::List(nested_meta_list) = nested_meta {
-                            for derive_meta in nested_meta_list.parse_args_with(Punctuated::<syn::Path, Token![,]>::parse_terminated)? {
-                                if derive_meta.is_ident("Mock") {
-                                    return Ok(Some(quote! { #[cfg(#predicate)] }));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        };
-    }
-
-    Ok(None)
 }
 
 fn derive_struct(data_struct: syn::DataStruct) -> syn::Result<proc_macro2::TokenStream> {
